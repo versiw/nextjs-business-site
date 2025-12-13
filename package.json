@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "format": "prettier --write .",
+    "commit": "versiwfekit-verify-commit"
   },
   "dependencies": {
     "next": "16.0.10",
@@ -18,9 +20,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@versiwfekit/prettier": "^1.0.1",
+    "@versiwfekit/verify-commit": "^1.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "prettier": "@versiwfekit/prettier"
 }

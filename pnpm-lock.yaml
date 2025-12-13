@@ -30,6 +30,12 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.7)
+      '@versiwfekit/prettier':
+        specifier: ^1.0.1
+        version: 1.0.1(prettier@3.7.4)
+      '@versiwfekit/verify-commit':
+        specifier: ^1.0.1
+        version: 1.0.1
       eslint:
         specifier: ^9
         version: 9.39.2(jiti@2.6.1)
@@ -675,6 +681,15 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
+
+  '@versiwfekit/prettier@1.0.1':
+    resolution: {integrity: sha512-oJjAcxqgUNmE5tsQfA3/qz0qHOsnhXLld7JERnxjp7UF6c4H/4XOtOEYkQ0lKAzJwImy91baFXwo056F7H5UnA==}
+    peerDependencies:
+      prettier: '>=3.0.0'
+
+  '@versiwfekit/verify-commit@1.0.1':
+    resolution: {integrity: sha512-6Gk+DoBhXh2mZl79FdzrvNaMPpEg14Yu7smqKcZQVLh4BEJb9iyfNykbgyt32PayeHQK1gaLWhEshiP6Qf/o1A==}
+    hasBin: true
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1605,6 +1620,11 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
+  prettier@3.7.4:
+    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
@@ -2495,6 +2515,12 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
+
+  '@versiwfekit/prettier@1.0.1(prettier@3.7.4)':
+    dependencies:
+      prettier: 3.7.4
+
+  '@versiwfekit/verify-commit@1.0.1': {}
 
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
@@ -3579,6 +3605,8 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.7.4: {}
 
   prop-types@15.8.1:
     dependencies:

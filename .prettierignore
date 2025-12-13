@@ -1,0 +1,15 @@
+# default
+
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+# custom
+
+**/dist
+**/cache
+**/.next
+CHANGELOG.md
+public/**/*
+pnpm-lock.yaml
