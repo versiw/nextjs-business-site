@@ -119,7 +119,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* 隐藏 WebKit 浏览器 (Chrome, Safari, Opera) 的滚动条 */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 隐藏 Firefox, IE 和 Edge 的滚动条 */
+  html,
+  body {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
