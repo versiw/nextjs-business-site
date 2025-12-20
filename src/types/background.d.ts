@@ -7,4 +7,19 @@ interface SilkBgConfig {
   rotation?: number
 }
 
-type HeroBackgroundConfig = SilkBgConfig
+interface LightPillarBgConfig {
+  type: 'light-pillar'
+  topColor?: string
+  bottomColor?: string
+  intensity?: number
+  rotationSpeed?: number
+  interactive?: boolean
+  glowAmount?: number
+  pillarWidth?: number
+  pillarHeight?: number
+  noiseIntensity?: number
+  mixBlendMode?: CSSProperties['mixBlendMode']
+  pillarRotation?: number
+}
+
+type HeroBackgroundConfig = SilkBgConfig | LightPillarBgConfig

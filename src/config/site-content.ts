@@ -25,11 +25,7 @@ export const siteContent: SiteContent = {
       }
     },
     background: {
-      type: 'silk',
-      color: '#5227ff',
-      speed: 5,
-      noise: 1.5,
-      scale: 1
+      type: 'silk'
     },
     overlays: {
       enableVignette: false,
