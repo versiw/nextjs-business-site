@@ -55,13 +55,8 @@ export function Navbar() {
           className={cn('flex items-center gap-2 group', !isScrolled && 'text-white')}
           onClick={(e) => scrollToSection(e, '#root')}
         >
-          <Hexagon
-            className={cn(
-              'h-8 w-8 transition-transform group-hover:rotate-12',
-              isScrolled ? 'text-primary' : 'text-white'
-            )}
-          />
-          <span className="text-xl font-bold tracking-tight">LUMINA</span>
+          <Hexagon className={cn('h-8 w-8', isScrolled ? 'text-primary' : 'text-white')} />
+          <span className="text-xl font-bold tracking-tight">Nextjs-Business-Site</span>
         </Link>
 
         {/* Desktop Nav */}

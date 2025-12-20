@@ -1,6 +1,6 @@
 # Project Context
 
-Generated time: 2025-12-14T12:22:25.766Z
+Generated time: 2025-12-20T08:48:48.093Z
 
 ## 1. Project Structure
 
@@ -17,6 +17,9 @@ Generated time: 2025-12-14T12:22:25.766Z
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components
+│   │   ├── backgrounds
+│   │   │   ├── index.tsx
+│   │   │   └── Silk.tsx
 │   │   ├── layout
 │   │   │   ├── Footer.tsx
 │   │   │   └── Navbar.tsx
@@ -26,18 +29,20 @@ Generated time: 2025-12-14T12:22:25.766Z
 │   │   │   ├── Hero.tsx
 │   │   │   ├── Portfolio.tsx
 │   │   │   └── Services.tsx
-│   │   ├── ui
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   ├── input.tsx
-│   │   │   ├── navigation-menu.tsx
-│   │   │   ├── sheet.tsx
-│   │   │   └── textarea.tsx
-│   │   └── Silk.tsx
-│   └── lib
-│       └── utils.ts
-├── .gitignore
-├── .prettierignore
+│   │   └── ui
+│   │       ├── button.tsx
+│   │       ├── card.tsx
+│   │       ├── input.tsx
+│   │       ├── navigation-menu.tsx
+│   │       ├── sheet.tsx
+│   │       └── textarea.tsx
+│   ├── config
+│   │   └── site-content.ts
+│   ├── lib
+│   │   └── utils.ts
+│   └── types
+│       ├── background.d.ts
+│       └── site.d.ts
 ├── components.json
 ├── eslint.config.mjs
 ├── next-env.d.ts
@@ -49,73 +54,7 @@ Generated time: 2025-12-14T12:22:25.766Z
 
 ## 2. File Contents
 
-Total files: 29
-
-### File: .gitignore
-
-```
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-```
-
-### File: .prettierignore
-
-```
-# default
-
-**/.git
-**/.svn
-**/.hg
-**/node_modules
-
-# custom
-
-**/dist
-**/cache
-**/.next
-CHANGELOG.md
-public/**/*
-pnpm-lock.yaml
-```
+Total files: 31
 
 ### File: components.json
 
@@ -174,7 +113,7 @@ export default eslintConfig
 ```typescript
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
-import './.next/dev/types/routes.d.ts'
+import "./.next/dev/types/routes.d.ts";
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
@@ -258,7 +197,7 @@ export default config
 
 ### File: README.md
 
-````markdown
+```markdown
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -274,7 +213,6 @@ pnpm dev
 # or
 bun dev
 ```
-````
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -296,8 +234,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-````
+```
 
 ### File: src/app/(mainLayout)/home/page.tsx
 
@@ -319,7 +256,7 @@ export default function HomePage() {
     </>
   )
 }
-````
+```
 
 ### File: src/app/(mainLayout)/layout.tsx
 
@@ -467,8 +404,21 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* 隐藏 WebKit 浏览器 (Chrome, Safari, Opera) 的滚动条 */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 隐藏 Firefox, IE 和 Edge 的滚动条 */
+  html,
+  body {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 ```
@@ -579,6 +529,201 @@ export default function Home() {
     </div>
   )
 }
+```
+
+### File: src/components/backgrounds/index.tsx
+
+```typescript
+'use client'
+
+import Silk from './Silk'
+
+interface BackgroundRendererProps {
+  config: HeroBackgroundConfig
+}
+
+export default function BackgroundRenderer({ config }: BackgroundRendererProps) {
+  switch (config.type) {
+    case 'silk':
+      return (
+        <Silk
+          color={config.color}
+          speed={config.speed}
+          scale={config.scale}
+          noiseIntensity={config.noise}
+          rotation={config.rotation}
+        />
+      )
+
+    default:
+      return null
+  }
+}
+```
+
+### File: src/components/backgrounds/Silk.tsx
+
+```typescript
+import React, { forwardRef, useMemo, useRef, useLayoutEffect } from 'react'
+import { Canvas, useFrame, useThree, RootState } from '@react-three/fiber'
+import { Color, Mesh, ShaderMaterial } from 'three'
+import { IUniform } from 'three'
+
+type NormalizedRGB = [number, number, number]
+
+const hexToNormalizedRGB = (hex: string): NormalizedRGB => {
+  const clean = hex.replace('#', '')
+  const r = parseInt(clean.slice(0, 2), 16) / 255
+  const g = parseInt(clean.slice(2, 4), 16) / 255
+  const b = parseInt(clean.slice(4, 6), 16) / 255
+  return [r, g, b]
+}
+
+interface UniformValue<T = number | Color> {
+  value: T
+}
+
+interface SilkUniforms {
+  uSpeed: UniformValue<number>
+  uScale: UniformValue<number>
+  uNoiseIntensity: UniformValue<number>
+  uColor: UniformValue<Color>
+  uRotation: UniformValue<number>
+  uTime: UniformValue<number>
+  [uniform: string]: IUniform
+}
+
+const vertexShader = `
+varying vec2 vUv;
+varying vec3 vPosition;
+
+void main() {
+  vPosition = position;
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`
+
+const fragmentShader = `
+varying vec2 vUv;
+varying vec3 vPosition;
+
+uniform float uTime;
+uniform vec3  uColor;
+uniform float uSpeed;
+uniform float uScale;
+uniform float uRotation;
+uniform float uNoiseIntensity;
+
+const float e = 2.71828182845904523536;
+
+float noise(vec2 texCoord) {
+  float G = e;
+  vec2  r = (G * sin(G * texCoord));
+  return fract(r.x * r.y * (1.0 + texCoord.x));
+}
+
+vec2 rotateUvs(vec2 uv, float angle) {
+  float c = cos(angle);
+  float s = sin(angle);
+  mat2  rot = mat2(c, -s, s, c);
+  return rot * uv;
+}
+
+void main() {
+  float rnd        = noise(gl_FragCoord.xy);
+  vec2  uv         = rotateUvs(vUv * uScale, uRotation);
+  vec2  tex        = uv * uScale;
+  float tOffset    = uSpeed * uTime;
+
+  tex.y += 0.03 * sin(8.0 * tex.x - tOffset);
+
+  float pattern = 0.6 +
+                  0.4 * sin(5.0 * (tex.x + tex.y +
+                                   cos(3.0 * tex.x + 5.0 * tex.y) +
+                                   0.02 * tOffset) +
+                           sin(20.0 * (tex.x + tex.y - 0.1 * tOffset)));
+
+  vec4 col = vec4(uColor, 1.0) * vec4(pattern) - rnd / 15.0 * uNoiseIntensity;
+  col.a = 1.0;
+  gl_FragColor = col;
+}
+`
+
+interface SilkPlaneProps {
+  uniforms: SilkUniforms
+}
+
+const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane({ uniforms }, ref) {
+  const { viewport } = useThree()
+
+  useLayoutEffect(() => {
+    const mesh = ref as React.MutableRefObject<Mesh | null>
+    if (mesh.current) {
+      mesh.current.scale.set(viewport.width, viewport.height, 1)
+    }
+  }, [ref, viewport])
+
+  useFrame((_state: RootState, delta: number) => {
+    const mesh = ref as React.MutableRefObject<Mesh | null>
+    if (mesh.current) {
+      const material = mesh.current.material as ShaderMaterial & {
+        uniforms: SilkUniforms
+      }
+      material.uniforms.uTime.value += 0.1 * delta
+    }
+  })
+
+  return (
+    <mesh ref={ref}>
+      <planeGeometry args={[1, 1, 1, 1]} />
+      <shaderMaterial
+        uniforms={uniforms}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+      />
+    </mesh>
+  )
+})
+SilkPlane.displayName = 'SilkPlane'
+
+export interface SilkProps {
+  speed?: number
+  scale?: number
+  color?: string
+  noiseIntensity?: number
+  rotation?: number
+}
+
+const Silk: React.FC<SilkProps> = ({
+  speed = 5,
+  scale = 1,
+  color = '#7B7481',
+  noiseIntensity = 1.5,
+  rotation = 0
+}) => {
+  const meshRef = useRef<Mesh>(null)
+
+  const uniforms = useMemo<SilkUniforms>(
+    () => ({
+      uSpeed: { value: speed },
+      uScale: { value: scale },
+      uNoiseIntensity: { value: noiseIntensity },
+      uColor: { value: new Color(...hexToNormalizedRGB(color)) },
+      uRotation: { value: rotation },
+      uTime: { value: 0 }
+    }),
+    [speed, scale, noiseIntensity, color, rotation]
+  )
+
+  return (
+    <Canvas dpr={[1, 2]} frameloop="always">
+      <SilkPlane ref={meshRef} uniforms={uniforms} />
+    </Canvas>
+  )
+}
+
+export default Silk
 ```
 
 ### File: src/components/layout/Footer.tsx
@@ -750,13 +895,8 @@ export function Navbar() {
           className={cn('flex items-center gap-2 group', !isScrolled && 'text-white')}
           onClick={(e) => scrollToSection(e, '#root')}
         >
-          <Hexagon
-            className={cn(
-              'h-8 w-8 transition-transform group-hover:rotate-12',
-              isScrolled ? 'text-primary' : 'text-white'
-            )}
-          />
-          <span className="text-xl font-bold tracking-tight">LUMINA</span>
+          <Hexagon className={cn('h-8 w-8', isScrolled ? 'text-primary' : 'text-white')} />
+          <span className="text-xl font-bold tracking-tight">Nextjs-Business-Site</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -1032,15 +1172,19 @@ export default function Contact() {
 ```typescript
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles } from 'lucide-react'
-import Silk from '@/components/Silk'
 import { cn } from '@/lib/utils'
+import { siteContent } from '@/config/site-content'
+import BackgroundRenderer from '@/components/backgrounds'
 
 export default function Hero() {
-  // 滚动逻辑
+  const { hero } = siteContent
+
+  const showTopFade = hero.overlays?.enableTopFade ?? true
+  const showVignette = hero.overlays?.enableVignette ?? false
+
   const scrollToId = (id: string) => {
     const element = document.getElementById(id)
     if (element) {
@@ -1048,19 +1192,18 @@ export default function Hero() {
     }
   }
 
-  // 动画变体配置
-  const fadeInUp = {
+  const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' }
+    }
   }
 
-  const staggerContainer = {
+  const staggerContainer: Variants = {
     visible: { transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
   }
-
-  // Silk 配置：这里选用了深紫灰色，既有布料质感，又不会太亮干扰文字
-  // 你可以尝试修改这个颜色，比如 #2A004E (深紫) 或 #09090b (深黑)
-  const SILK_COLOR = '#5227ff'
 
   return (
     <section
@@ -1069,15 +1212,18 @@ export default function Hero() {
     >
       {/* ==================== 背景层 ==================== */}
       <div className="absolute inset-0 z-0">
-        {/* 1. Silk 3D 画布 */}
-        <Silk color={SILK_COLOR} speed={5} scale={1} noiseIntensity={1.5} rotation={0} />
+        {/* 使用注册表组件渲染背景 */}
+        <BackgroundRenderer config={hero.background} />
 
-        {/* 2. 径向渐变遮罩 (Vignette) */}
-        {/* 作用：让四周变暗，聚焦中心，同时让 Silk 融入页面背景 */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_10%,rgba(9,9,11,0.8)_60%,rgba(9,9,11,1)_100%)] pointer-events-none" />
+        {/* 通用暗角遮罩 (让文字更清晰，且融入背景) - 可配置开关 */}
+        {showVignette && (
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_10%,rgba(9,9,11,0.8)_60%,rgba(9,9,11,1)_100%)] pointer-events-none" />
+        )}
 
-        {/* 3. 顶部淡出遮罩 (防止 Navbar 文字看不清) */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-zinc-950/80 to-transparent pointer-events-none" />
+        {/* 顶部渐变遮罩 (防止 Navbar 看不清) - 可配置开关 */}
+        {showTopFade && (
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-zinc-950/80 to-transparent pointer-events-none" />
+        )}
       </div>
 
       {/* ==================== 内容层 ==================== */}
@@ -1089,28 +1235,28 @@ export default function Hero() {
           animate="visible"
         >
           {/* 1. 顶部小气泡 (Badge) */}
-          <motion.div variants={fadeInUp}>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-white/10">
-              <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-              <span className="tracking-wide">Lumina Design System v2.0</span>
-            </div>
-          </motion.div>
+          {hero.badge.isShow && (
+            <motion.div variants={fadeInUp}>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+                <span className="tracking-wide">{hero.badge.text}</span>
+              </div>
+            </motion.div>
+          )}
 
           {/* 2. 主标题 (Slogan) */}
           <motion.div variants={fadeInUp} className="max-w-4xl">
             <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-7xl lg:text-8xl">
-              <span className="block drop-shadow-2xl">不仅是视觉表现</span>
+              <span className="block drop-shadow-2xl">{hero.title.line1}</span>
               <span className="mt-2 block bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-transparent">
-                更是未来的数字体验
+                {hero.title.line2}
               </span>
             </h1>
           </motion.div>
 
           {/* 3. 副标题 (Description) */}
           <motion.div variants={fadeInUp} className="mt-6 max-w-2xl">
-            <p className="text-lg leading-relaxed text-zinc-400 md:text-xl">
-              通过策略性的设计方案提升您的品牌价值。我们将创意与尖端技术融合，为您建立与用户之间深层次的连接。
-            </p>
+            <p className="text-lg leading-relaxed text-zinc-400 md:text-xl">{hero.description}</p>
           </motion.div>
 
           {/* 4. 按钮组 (Buttons) */}
@@ -1118,17 +1264,15 @@ export default function Hero() {
             variants={fadeInUp}
             className="mt-10 flex flex-col gap-4 sm:flex-row sm:gap-6"
           >
-            {/* 主按钮：高亮、实心 */}
             <Button
               size="lg"
               className="h-12 min-w-[160px] rounded-full bg-white text-zinc-950 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:bg-zinc-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all"
-              onClick={() => scrollToId('contact')}
+              onClick={() => scrollToId(hero.buttons.primary.link)}
             >
-              立即合作
+              {hero.buttons.primary.text}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
-            {/* 次按钮：玻璃拟态、描边 */}
             <Button
               size="lg"
               variant="outline"
@@ -1136,15 +1280,15 @@ export default function Hero() {
                 'h-12 min-w-[160px] rounded-full border-white/10 bg-white/5 text-white backdrop-blur-sm transition-all',
                 'hover:bg-white/10 hover:border-white/20 hover:text-white'
               )}
-              onClick={() => scrollToId('portfolio')}
+              onClick={() => scrollToId(hero.buttons.secondary.link)}
             >
-              了解更多
+              {hero.buttons.secondary.text}
             </Button>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* ==================== 底部滚动提示 ==================== */}
+      {/* 底部滚动提示 */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -1386,213 +1530,56 @@ export default function Services() {
 }
 ```
 
-### File: src/components/Silk.tsx
-
-```typescript
-import React, { forwardRef, useMemo, useRef, useLayoutEffect } from 'react';
-import { Canvas, useFrame, useThree, RootState } from '@react-three/fiber';
-import { Color, Mesh, ShaderMaterial } from 'three';
-import { IUniform } from 'three';
-
-type NormalizedRGB = [number, number, number];
-
-const hexToNormalizedRGB = (hex: string): NormalizedRGB => {
-  const clean = hex.replace('#', '');
-  const r = parseInt(clean.slice(0, 2), 16) / 255;
-  const g = parseInt(clean.slice(2, 4), 16) / 255;
-  const b = parseInt(clean.slice(4, 6), 16) / 255;
-  return [r, g, b];
-};
-
-interface UniformValue<T = number | Color> {
-  value: T;
-}
-
-interface SilkUniforms {
-  uSpeed: UniformValue<number>;
-  uScale: UniformValue<number>;
-  uNoiseIntensity: UniformValue<number>;
-  uColor: UniformValue<Color>;
-  uRotation: UniformValue<number>;
-  uTime: UniformValue<number>;
-  [uniform: string]: IUniform;
-}
-
-const vertexShader = `
-varying vec2 vUv;
-varying vec3 vPosition;
-
-void main() {
-  vPosition = position;
-  vUv = uv;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`;
-
-const fragmentShader = `
-varying vec2 vUv;
-varying vec3 vPosition;
-
-uniform float uTime;
-uniform vec3  uColor;
-uniform float uSpeed;
-uniform float uScale;
-uniform float uRotation;
-uniform float uNoiseIntensity;
-
-const float e = 2.71828182845904523536;
-
-float noise(vec2 texCoord) {
-  float G = e;
-  vec2  r = (G * sin(G * texCoord));
-  return fract(r.x * r.y * (1.0 + texCoord.x));
-}
-
-vec2 rotateUvs(vec2 uv, float angle) {
-  float c = cos(angle);
-  float s = sin(angle);
-  mat2  rot = mat2(c, -s, s, c);
-  return rot * uv;
-}
-
-void main() {
-  float rnd        = noise(gl_FragCoord.xy);
-  vec2  uv         = rotateUvs(vUv * uScale, uRotation);
-  vec2  tex        = uv * uScale;
-  float tOffset    = uSpeed * uTime;
-
-  tex.y += 0.03 * sin(8.0 * tex.x - tOffset);
-
-  float pattern = 0.6 +
-                  0.4 * sin(5.0 * (tex.x + tex.y +
-                                   cos(3.0 * tex.x + 5.0 * tex.y) +
-                                   0.02 * tOffset) +
-                           sin(20.0 * (tex.x + tex.y - 0.1 * tOffset)));
-
-  vec4 col = vec4(uColor, 1.0) * vec4(pattern) - rnd / 15.0 * uNoiseIntensity;
-  col.a = 1.0;
-  gl_FragColor = col;
-}
-`;
-
-interface SilkPlaneProps {
-  uniforms: SilkUniforms;
-}
-
-const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane({ uniforms }, ref) {
-  const { viewport } = useThree();
-
-  useLayoutEffect(() => {
-    const mesh = ref as React.MutableRefObject<Mesh | null>;
-    if (mesh.current) {
-      mesh.current.scale.set(viewport.width, viewport.height, 1);
-    }
-  }, [ref, viewport]);
-
-  useFrame((_state: RootState, delta: number) => {
-    const mesh = ref as React.MutableRefObject<Mesh | null>;
-    if (mesh.current) {
-      const material = mesh.current.material as ShaderMaterial & {
-        uniforms: SilkUniforms;
-      };
-      material.uniforms.uTime.value += 0.1 * delta;
-    }
-  });
-
-  return (
-    <mesh ref={ref}>
-      <planeGeometry args={[1, 1, 1, 1]} />
-      <shaderMaterial uniforms={uniforms} vertexShader={vertexShader} fragmentShader={fragmentShader} />
-    </mesh>
-  );
-});
-SilkPlane.displayName = 'SilkPlane';
-
-export interface SilkProps {
-  speed?: number;
-  scale?: number;
-  color?: string;
-  noiseIntensity?: number;
-  rotation?: number;
-}
-
-const Silk: React.FC<SilkProps> = ({ speed = 5, scale = 1, color = '#7B7481', noiseIntensity = 1.5, rotation = 0 }) => {
-  const meshRef = useRef<Mesh>(null);
-
-  const uniforms = useMemo<SilkUniforms>(
-    () => ({
-      uSpeed: { value: speed },
-      uScale: { value: scale },
-      uNoiseIntensity: { value: noiseIntensity },
-      uColor: { value: new Color(...hexToNormalizedRGB(color)) },
-      uRotation: { value: rotation },
-      uTime: { value: 0 }
-    }),
-    [speed, scale, noiseIntensity, color, rotation]
-  );
-
-  return (
-    <Canvas dpr={[1, 2]} frameloop="always">
-      <SilkPlane ref={meshRef} uniforms={uniforms} />
-    </Canvas>
-  );
-};
-
-export default Silk;
-```
-
 ### File: src/components/ui/button.tsx
 
 ```typescript
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from 'react'
+import { Slot } from '@radix-ui/react-slot'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+        link: 'text-primary underline-offset-4 hover:underline'
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
-        "icon-sm": "size-8",
-        "icon-lg": "size-10",
-      },
+        default: 'h-9 px-4 py-2 has-[>svg]:px-3',
+        sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
+        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        icon: 'size-9',
+        'icon-sm': 'size-8',
+        'icon-lg': 'size-10'
+      }
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+      variant: 'default',
+      size: 'default'
+    }
   }
 )
 
 function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant = 'default',
+  size = 'default',
   asChild = false,
   ...props
-}: React.ComponentProps<"button"> &
+}: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
   }) {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? Slot : 'button'
 
   return (
     <Comp
@@ -1611,16 +1598,16 @@ export { Button, buttonVariants }
 ### File: src/components/ui/card.tsx
 
 ```typescript
-import * as React from "react"
+import * as React from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
         className
       )}
       {...props}
@@ -1628,12 +1615,12 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
         className
       )}
       {...props}
@@ -1641,86 +1628,69 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn("leading-none font-semibold", className)}
+      className={cn('leading-none font-semibold', className)}
       {...props}
     />
   )
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   )
 }
 
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-action"
-      className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
-      )}
+      className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
       {...props}
     />
   )
 }
 
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn("px-6", className)}
-      {...props}
-    />
-  )
+function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
+  return <div data-slot="card-content" className={cn('px-6', className)} {...props} />
 }
 
-function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
+      className={cn('flex items-center px-6 [.border-t]:pt-6', className)}
       {...props}
     />
   )
 }
 
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
-}
+export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, CardContent }
 ```
 
 ### File: src/components/ui/input.tsx
 
 ```typescript
-import * as React from "react"
+import * as React from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
     <input
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+        'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+        'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
         className
       )}
       {...props}
@@ -1734,12 +1704,12 @@ export { Input }
 ### File: src/components/ui/navigation-menu.tsx
 
 ```typescript
-import * as React from "react"
-import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
-import { cva } from "class-variance-authority"
-import { ChevronDownIcon } from "lucide-react"
+import * as React from 'react'
+import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu'
+import { cva } from 'class-variance-authority'
+import { ChevronDownIcon } from 'lucide-react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 function NavigationMenu({
   className,
@@ -1754,7 +1724,7 @@ function NavigationMenu({
       data-slot="navigation-menu"
       data-viewport={viewport}
       className={cn(
-        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+        'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',
         className
       )}
       {...props}
@@ -1772,10 +1742,7 @@ function NavigationMenuList({
   return (
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
-      className={cn(
-        "group flex flex-1 list-none items-center justify-center gap-1",
-        className
-      )}
+      className={cn('group flex flex-1 list-none items-center justify-center gap-1', className)}
       {...props}
     />
   )
@@ -1788,14 +1755,14 @@ function NavigationMenuItem({
   return (
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
-      className={cn("relative", className)}
+      className={cn('relative', className)}
       {...props}
     />
   )
 }
 
 const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
+  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1'
 )
 
 function NavigationMenuTrigger({
@@ -1806,10 +1773,10 @@ function NavigationMenuTrigger({
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
-      className={cn(navigationMenuTriggerStyle(), "group", className)}
+      className={cn(navigationMenuTriggerStyle(), 'group', className)}
       {...props}
     >
-      {children}{" "}
+      {children}{' '}
       <ChevronDownIcon
         className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
         aria-hidden="true"
@@ -1826,8 +1793,8 @@ function NavigationMenuContent({
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 top-0 left-0 w-full p-2 pr-2.5 md:absolute md:w-auto",
-        "group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:data-[state=open]:animate-in group-data-[viewport=false]/navigation-menu:data-[state=closed]:animate-out group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:fade-in-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:fade-out-0 group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
+        'data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 top-0 left-0 w-full p-2 pr-2.5 md:absolute md:w-auto',
+        'group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:data-[state=open]:animate-in group-data-[viewport=false]/navigation-menu:data-[state=closed]:animate-out group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:fade-in-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:fade-out-0 group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none',
         className
       )}
       {...props}
@@ -1840,15 +1807,11 @@ function NavigationMenuViewport({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
   return (
-    <div
-      className={cn(
-        "absolute top-full left-0 isolate z-50 flex justify-center"
-      )}
-    >
+    <div className={cn('absolute top-full left-0 isolate z-50 flex justify-center')}>
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         className={cn(
-          "origin-top-center bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow md:w-[var(--radix-navigation-menu-viewport-width)]",
+          'origin-top-center bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow md:w-[var(--radix-navigation-menu-viewport-width)]',
           className
         )}
         {...props}
@@ -1881,7 +1844,7 @@ function NavigationMenuIndicator({
     <NavigationMenuPrimitive.Indicator
       data-slot="navigation-menu-indicator"
       className={cn(
-        "data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden",
+        'data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden',
         className
       )}
       {...props}
@@ -1900,40 +1863,34 @@ export {
   NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
-  navigationMenuTriggerStyle,
+  navigationMenuTriggerStyle
 }
 ```
 
 ### File: src/components/ui/sheet.tsx
 
 ```typescript
-"use client"
+'use client'
 
-import * as React from "react"
-import * as SheetPrimitive from "@radix-ui/react-dialog"
-import { XIcon } from "lucide-react"
+import * as React from 'react'
+import * as SheetPrimitive from '@radix-ui/react-dialog'
+import { XIcon } from 'lucide-react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }
 
-function SheetTrigger({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
+function SheetTrigger({ ...props }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
   return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
 }
 
-function SheetClose({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Close>) {
+function SheetClose({ ...props }: React.ComponentProps<typeof SheetPrimitive.Close>) {
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
 }
 
-function SheetPortal({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
+function SheetPortal({ ...props }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
 }
 
@@ -1945,7 +1902,7 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50',
         className
       )}
       {...props}
@@ -1956,10 +1913,10 @@ function SheetOverlay({
 function SheetContent({
   className,
   children,
-  side = "right",
+  side = 'right',
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: "top" | "right" | "bottom" | "left"
+  side?: 'top' | 'right' | 'bottom' | 'left'
 }) {
   return (
     <SheetPortal>
@@ -1967,15 +1924,15 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
-          side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
-          side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
-          side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
-          side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
+          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+          side === 'right' &&
+            'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm',
+          side === 'left' &&
+            'data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm',
+          side === 'top' &&
+            'data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b',
+          side === 'bottom' &&
+            'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t',
           className
         )}
         {...props}
@@ -1990,34 +1947,31 @@ function SheetContent({
   )
 }
 
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-1.5 p-4", className)}
+      className={cn('flex flex-col gap-1.5 p-4', className)}
       {...props}
     />
   )
 }
 
-function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      className={cn('mt-auto flex flex-col gap-2 p-4', className)}
       {...props}
     />
   )
 }
 
-function SheetTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Title>) {
+function SheetTitle({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Title>) {
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-foreground font-semibold", className)}
+      className={cn('text-foreground font-semibold', className)}
       {...props}
     />
   )
@@ -2030,7 +1984,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   )
@@ -2044,23 +1998,23 @@ export {
   SheetHeader,
   SheetFooter,
   SheetTitle,
-  SheetDescription,
+  SheetDescription
 }
 ```
 
 ### File: src/components/ui/textarea.tsx
 
 ```typescript
-import * as React from "react"
+import * as React from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
   return (
     <textarea
       data-slot="textarea"
       className={cn(
-        "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
         className
       )}
       {...props}
@@ -2069,6 +2023,50 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
 }
 
 export { Textarea }
+```
+
+### File: src/config/site-content.ts
+
+```typescript
+export const siteContent: SiteContent = {
+  global: {
+    brandName: 'LUMINA',
+    logoText: 'LUMINA'
+  },
+  hero: {
+    badge: {
+      text: '荣获广告设计创意奖',
+      isShow: true
+    },
+    title: {
+      line1: '不仅是视觉表现',
+      line2: '更是未来的数字体验'
+    },
+    description:
+      '通过策略性的设计方案提升您的品牌价值。我们将创意与尖端技术融合，为您建立与用户之间深层次的连接。',
+    buttons: {
+      primary: {
+        text: '立即合作',
+        link: 'contact'
+      },
+      secondary: {
+        text: '了解更多',
+        link: 'services'
+      }
+    },
+    background: {
+      type: 'silk',
+      color: '#5227ff',
+      speed: 5,
+      noise: 1.5,
+      scale: 1
+    },
+    overlays: {
+      enableVignette: false,
+      enableTopFade: true
+    }
+  }
+}
 ```
 
 ### File: src/lib/utils.ts
@@ -2081,3 +2079,59 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 ```
+
+### File: src/types/background.d.ts
+
+```typescript
+interface SilkBgConfig {
+  type: 'silk'
+  color?: string
+  speed?: number
+  scale?: number
+  noise?: number
+  rotation?: number
+}
+
+type HeroBackgroundConfig = SilkBgConfig
+```
+
+### File: src/types/site.d.ts
+
+```typescript
+interface ButtonConfig {
+  text: string
+  link: string
+}
+
+interface HeroSectionContent {
+  badge: {
+    text: string
+    isShow: boolean
+  }
+  title: {
+    line1: string
+    line2: string
+  }
+  description: string
+  buttons: {
+    primary: ButtonConfig
+    secondary: ButtonConfig
+  }
+  background: HeroBackgroundConfig
+  overlays?: {
+    enableVignette?: boolean
+    enableTopFade?: boolean
+  }
+}
+
+interface GlobalConfig {
+  brandName: string
+  logoText: string
+}
+
+interface SiteContent {
+  global: GlobalConfig
+  hero: HeroSectionContent
+}
+```
+

@@ -53,7 +53,9 @@ const config: Config = {
     '.DS_Store',
     '.eslintrc.json',
     '.eslintrc.js',
-    'tsconfig.json' // 这种配置文件通常不需要给 AI 看，除非你想debug配置
+    '.gitignore',
+    '.prettierignore',
+    'tsconfig.json'
   ]),
 
   // 排除的二进制后缀
