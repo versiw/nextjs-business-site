@@ -1,36 +1,72 @@
 'use client'
 
-import React from 'react'
 import { motion } from 'framer-motion'
+import BlurText from '@/components/ui/BlurText'
+import SpotlightCard from '@/components/ui/SpotlightCard'
+import CountUp from '@/components/ui/CountUp'
 
 const stats = [
-  { value: '10+', label: '年行业经验' },
-  { value: '200+', label: '成功交付项目' },
-  { value: '50+', label: '全球合作伙伴' },
-  { value: '15', label: '荣获设计奖项' }
+  { value: 10, suffix: '+', label: '年行业经验' },
+  { value: 200, suffix: '+', label: '成功交付项目' },
+  { value: 50, suffix: '+', label: '全球合作伙伴' },
+  { value: 15, suffix: '', label: '荣获设计奖项' }
 ]
 
 export default function About() {
   return (
     <section
       id="about"
-      className="py-24 bg-primary text-primary-foreground relative overflow-hidden"
+      className="py-32 bg-primary text-primary-foreground relative overflow-hidden"
     >
-      {/* Decorative circle */}
-      <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      <div
+        className="absolute top-0 right-0 w-200 h-200 bg-linear-to-br from-white/8 to-transparent rounded-full blur-3xl -translate-y-1/3 translate-x-1/3 pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-0 left-0 w-120 h-120 bg-linear-to-tr from-white/5 to-transparent rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none"
+        aria-hidden="true"
+      />
+
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px'
+        }}
+        aria-hidden="true"
+      />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
-              我们是设计师，思考者，也是问题解决者。
-            </h2>
-            <div className="space-y-4 text-primary-foreground/80 text-lg leading-relaxed">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-16"
+        >
+          <span className="text-sm font-medium tracking-[0.3em] uppercase text-primary-foreground/50">
+            关于我们
+          </span>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          <div className="lg:col-span-7">
+            <BlurText
+              text="我们是设计师，思考者，也是问题解决者。"
+              delay={80}
+              animateBy="words"
+              direction="top"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold mb-8 tracking-tight leading-[1.1]"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="space-y-6 text-primary-foreground/70 text-lg leading-relaxed max-w-2xl"
+            >
               <p>
                 Lumina 成立于 2014
                 年，已从一个小型的设计工作室成长为全方位的数字代理机构。我们坚信，好的设计不仅仅是外观，更是运作方式。
@@ -38,23 +74,45 @@ export default function About() {
               <p>
                 我们的理念很简单：以人为本。无论是您的客户还是您的团队，我们设计的体验都能改善生活并推动业务增长。
               </p>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <div className="grid grid-cols-2 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/10"
-              >
-                <div className="text-4xl md:text-5xl font-bold mb-2">{stat.value}</div>
-                <div className="text-primary-foreground/60 font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="h-px bg-linear-to-r from-primary-foreground/30 to-transparent mt-12 origin-left max-w-md"
+            />
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                >
+                  <SpotlightCard className="h-full" spotlightColor="rgba(255, 255, 255, 0.12)">
+                    <div className="flex flex-col justify-between h-full min-h-35">
+                      <div className="text-4xl md:text-5xl font-bold tracking-tight">
+                        <CountUp
+                          to={stat.value}
+                          duration={2.5}
+                          delay={0.3 + index * 0.1}
+                          suffix={stat.suffix}
+                        />
+                      </div>
+                      <div className="text-primary-foreground/50 text-sm font-medium mt-4">
+                        {stat.label}
+                      </div>
+                    </div>
+                  </SpotlightCard>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
