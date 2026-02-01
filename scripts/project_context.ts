@@ -5,6 +5,7 @@ const CONFIG = {
   outputFile: 'project_context.md',
 
   excludedDirs: [
+    '.agent',
     'node_modules',
     '.git',
     '.next',
@@ -42,6 +43,7 @@ const CONFIG = {
   ],
 
   excludedExtensions: [
+    '.md',
     '.png',
     '.jpg',
     '.jpeg',

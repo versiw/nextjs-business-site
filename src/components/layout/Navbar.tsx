@@ -4,12 +4,15 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Menu, X, Hexagon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const isHomePage = pathname === '/home'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,9 +23,14 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+    if (!isHomePage) {
+      setIsMobileMenuOpen(false)
+      return
+    }
+
     e.preventDefault()
-    const targetId = href.replace('#', '')
+    const targetId = hash.replace('#', '')
     const element = document.getElementById(targetId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
@@ -31,11 +39,11 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { name: '首页', href: '#root' },
-    { name: '服务', href: '#services' },
-    { name: '案例', href: '#portfolio' },
-    { name: '关于', href: '#about' },
-    { name: '联系', href: '#contact' }
+    { name: '首页', hash: '#root' },
+    { name: '服务', hash: '#services' },
+    { name: '案例', hash: '#portfolio' },
+    { name: '关于', hash: '#about' },
+    { name: '联系', hash: '#contact' }
   ]
 
   return (
@@ -49,9 +57,9 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         <Link
-          href="/"
+          href="/home#root"
           className={cn('flex items-center gap-2 group', !isScrolled && 'text-white')}
-          onClick={(e) => scrollToSection(e, '#root')}
+          onClick={(e) => handleNavClick(e, '#root')}
         >
           <Hexagon className={cn('h-8 w-8', isScrolled ? 'text-primary' : 'text-white')} />
           <span className="text-xl font-bold tracking-tight">Nextjs-Business-Site</span>
@@ -59,10 +67,10 @@ export function Navbar() {
 
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.name}
-              href={link.href}
-              onClick={(e) => scrollToSection(e, link.href)}
+              href={isHomePage ? link.hash : `/home${link.hash}`}
+              onClick={(e) => handleNavClick(e, link.hash)}
               className={cn(
                 'text-sm font-medium transition-colors relative group',
                 isScrolled
@@ -77,10 +85,10 @@ export function Navbar() {
                   isScrolled ? 'bg-primary' : 'bg-white'
                 )}
               />
-            </a>
+            </Link>
           ))}
           <Button
-            onClick={(e) => scrollToSection(e as any, '#contact')}
+            onClick={(e) => handleNavClick(e as any, '#contact')}
             className={cn(!isScrolled && 'bg-white text-black hover:bg-zinc-200')}
           >
             开始合作
@@ -105,19 +113,16 @@ export function Navbar() {
           >
             <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
-                  href={link.href}
+                  href={isHomePage ? link.hash : `/home${link.hash}`}
                   className="text-lg font-medium text-foreground py-2 border-b border-border/50 last:border-0"
-                  onClick={(e) => scrollToSection(e, link.href)}
+                  onClick={(e) => handleNavClick(e, link.hash)}
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
-              <Button
-                className="w-full mt-4"
-                onClick={(e) => scrollToSection(e as any, '#contact')}
-              >
+              <Button className="w-full mt-4" onClick={(e) => handleNavClick(e as any, '#contact')}>
                 开始合作
               </Button>
             </div>
