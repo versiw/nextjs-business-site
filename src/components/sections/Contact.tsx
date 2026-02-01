@@ -34,7 +34,10 @@ export default function Contact() {
   const [focusedField, setFocusedField] = useState<string | null>(null)
 
   return (
-    <section id="contact" className="py-32 bg-background relative overflow-hidden">
+    <section
+      id="contact"
+      className="min-h-dvh py-12 md:py-16 lg:py-20 bg-background relative overflow-hidden flex flex-col justify-center"
+    >
       <div
         className="absolute top-0 left-0 w-160 h-160 bg-linear-to-br from-primary/5 to-transparent rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3 pointer-events-none"
         aria-hidden="true"
@@ -53,23 +56,23 @@ export default function Contact() {
         aria-hidden="true"
       />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-2xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-16"
-        ></motion.div>
+          className="mb-8 md:mb-12 lg:mb-16"
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-12 xl:gap-16">
           <div className="lg:col-span-5">
             <BlurText
               text="让我们一起创造非凡。"
               delay={80}
               animateBy="words"
               direction="top"
-              className="text-3xl md:text-5xl lg:text-6xl font-bold mb-8 tracking-tight leading-[1.1]"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 tracking-tight leading-[1.1]"
             />
 
             <motion.p
@@ -77,12 +80,12 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-lg text-muted-foreground mb-16 max-w-md"
+              className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8 max-w-md"
             >
               准备好开始下一个创意了吗？给我们留言或直接来访，我们总是期待听到您的想法。
             </motion.p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {contactInfo.map((item, index) => (
                 <motion.a
                   key={index}
@@ -91,9 +94,9 @@ export default function Contact() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                  className="group flex items-start gap-5 p-5 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/20 hover:bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
+                  className="group flex items-start gap-4 p-4 rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/20 hover:bg-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5 cursor-pointer"
                 >
-                  <div className="p-3 rounded-xl bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                  <div className="p-2.5 rounded-lg bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
@@ -118,16 +121,16 @@ export default function Contact() {
             className="lg:col-span-7"
           >
             <Card className="border-border/50 shadow-xl shadow-primary/5 bg-card/80 backdrop-blur-sm overflow-hidden">
-              <CardContent className="p-8 md:p-10">
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-2">联系我们</h3>
+              <CardContent className="p-5 sm:p-6 md:p-8">
+                <div className="mb-5">
+                  <h3 className="text-lg font-semibold mb-1">联系我们</h3>
                   <p className="text-muted-foreground text-sm">
                     填写以下表单，我们会在 24 小时内回复您
                   </p>
                 </div>
 
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label
                         htmlFor="name"
@@ -138,7 +141,7 @@ export default function Contact() {
                       <Input
                         id="name"
                         placeholder="张三"
-                        className="h-12 border-border/50 focus:border-primary transition-all duration-200"
+                        className="h-10 border-border/50 focus:border-primary transition-all duration-200"
                         onFocus={() => setFocusedField('name')}
                         onBlur={() => setFocusedField(null)}
                       />
@@ -154,7 +157,7 @@ export default function Contact() {
                         id="email"
                         type="email"
                         placeholder="zhangsan@example.com"
-                        className="h-12 border-border/50 focus:border-primary transition-all duration-200"
+                        className="h-10 border-border/50 focus:border-primary transition-all duration-200"
                         onFocus={() => setFocusedField('email')}
                         onBlur={() => setFocusedField(null)}
                       />
@@ -171,7 +174,7 @@ export default function Contact() {
                     <Input
                       id="subject"
                       placeholder="项目咨询"
-                      className="h-12 border-border/50 focus:border-primary transition-all duration-200"
+                      className="h-10 border-border/50 focus:border-primary transition-all duration-200"
                       onFocus={() => setFocusedField('subject')}
                       onBlur={() => setFocusedField(null)}
                     />
@@ -187,7 +190,7 @@ export default function Contact() {
                     <Textarea
                       id="message"
                       placeholder="请告诉我们您的项目需求..."
-                      className="min-h-40 border-border/50 focus:border-primary transition-all duration-200 resize-none"
+                      className="min-h-24 border-border/50 focus:border-primary transition-all duration-200 resize-none"
                       onFocus={() => setFocusedField('message')}
                       onBlur={() => setFocusedField(null)}
                     />
@@ -196,7 +199,7 @@ export default function Contact() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full h-14 text-base font-medium group relative overflow-hidden"
+                    className="w-full h-11 text-sm font-medium group relative overflow-hidden"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       发送信息

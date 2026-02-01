@@ -16,7 +16,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="py-32 bg-primary text-primary-foreground relative overflow-hidden"
+      className="min-h-dvh py-20 md:py-24 lg:py-32 bg-primary text-primary-foreground relative overflow-hidden flex flex-col justify-center"
     >
       <div
         className="absolute top-0 right-0 w-200 h-200 bg-linear-to-br from-white/8 to-transparent rounded-full blur-3xl -translate-y-1/3 translate-x-1/3 pointer-events-none"
@@ -37,20 +37,20 @@ export default function About() {
         aria-hidden="true"
       />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-2xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-16"
+          className="mb-8 md:mb-12 lg:mb-16"
         >
           <span className="text-sm font-medium tracking-[0.3em] uppercase text-primary-foreground/50">
             关于我们
           </span>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-16">
           <div className="lg:col-span-7">
             <BlurText
               text="我们是设计师，思考者，也是问题解决者。"
@@ -86,7 +86,7 @@ export default function About() {
           </div>
 
           <div className="lg:col-span-5">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
