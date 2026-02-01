@@ -41,4 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # other
-project_context.md
+project_context*.md

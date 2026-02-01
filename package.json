@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "commit": "versiwfekit-verify-commit",
-    "md": "tsx scripts/export-project.ts"
+    "commit": "versiwfekit-verify-commit"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
