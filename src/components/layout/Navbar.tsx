@@ -15,6 +15,7 @@ export function Navbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
     }
+    handleScroll()
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -41,15 +42,12 @@ export function Navbar() {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        // 滚动时：使用 Shadcn 标准背景色 (bg-background/80)
-        // 未滚动时：文字强制白色 (text-white)，因为背景是深色的 Hero
         isScrolled
           ? 'bg-background/80 backdrop-blur-md border-b border-border py-4'
           : 'bg-transparent border-transparent py-6'
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        {/* LOGO 文字颜色逻辑：滚动随主题，不滚动强制白 */}
         <Link
           href="/"
           className={cn('flex items-center gap-2 group', !isScrolled && 'text-white')}
@@ -59,7 +57,6 @@ export function Navbar() {
           <span className="text-xl font-bold tracking-tight">Nextjs-Business-Site</span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <a
@@ -68,7 +65,6 @@ export function Navbar() {
               onClick={(e) => scrollToSection(e, link.href)}
               className={cn(
                 'text-sm font-medium transition-colors relative group',
-                // 链接颜色逻辑
                 isScrolled
                   ? 'text-muted-foreground hover:text-primary'
                   : 'text-zinc-300 hover:text-white'
@@ -91,7 +87,6 @@ export function Navbar() {
           </Button>
         </nav>
 
-        {/* Mobile Toggle */}
         <button
           className={cn('md:hidden p-2', isScrolled ? 'text-foreground' : 'text-white')}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -100,7 +95,6 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu - 保持 Shadcn 默认背景即可 */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
